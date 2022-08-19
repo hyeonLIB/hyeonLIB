@@ -100,6 +100,7 @@ def update_graph(stock_slctd):
     Input('my-dpdn2', 'value')
 )
 def update_graph(stock_slctd):
+    print(stock_slctd)
     dff = df[df['Symbols'].isin(stock_slctd)]
     figln2 = px.line(dff, x='Date', y='Open', color='Symbols')
     return figln2
