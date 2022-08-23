@@ -1,3 +1,4 @@
+from re import I
 from dash import Dash, dcc, html, Output, Input, dash_table
 import plotly.express as px
 import dash_bootstrap_components as dbc
@@ -5,6 +6,16 @@ import pandas as pd
 import pandas_datareader.data as web
 import datetime
 import os
+
+"""
+1. Test file -> df_viewer.loc[:15] <remove the line>
+2. dcc.Dropdown(id='dpdn-data-selection', multi=False, value=dir_list[-1], 
+    -> need to change multiple selection mode and make function can merge the selected dataframes
+3. auto width of data-viewer cells
+4. Do I need to set all columns as default when I display data on data viewer?
+5. Need to arange functions
+"""
+
 
 global data_path
 data_path = './raw_data'
@@ -34,20 +45,16 @@ def load_data(file_name,data_path, to_csv=False):
 
 
 # Default dataframe
-global df_viewer ## ?
 df_viewer = pd.read_sas('hn19_all.sas7bdat', encoding='iso-8859-1', format='sas7bdat') ##
 
 df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]
 df_viewer = df_viewer.loc[:15] # need to remove
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],
-            meta_tags=[{'name': 'viewport',
-                        'content': 'width=device-width, initial-scale=1.0'}]
-            )
-# from dash_extensions.enrich import Output, DashProxy, Input, MultiplexerTransform
 
-# app = DashProxy(__name__, prevent_initial_callbacks=True, transforms=[MultiplexerTransform()],external_stylesheets=[dbc.themes.BOOTSTRAP],
-#             meta_tags=[{'name': 'viewport','content': 'width=device-width, initial-scale=1.0'}])
+from dash_extensions.enrich import Output, DashProxy, Input, MultiplexerTransform
+#prevent_initial_callbacks=True,
+app = DashProxy(__name__,  transforms=[MultiplexerTransform()],external_stylesheets=[dbc.themes.BOOTSTRAP],
+            meta_tags=[{'name': 'viewport','content': 'width=device-width, initial-scale=1.0'}])
 
 # Layout section: Bootstrap
 # --------------------------------------------------------------
@@ -88,7 +95,7 @@ app.layout = dbc.Container([
         
         # Columns selection
         dbc.Col([
-            dcc.Dropdown(id='dpdn-col-selection', multi=True, value=['PFE','BNTX'],
+            dcc.Dropdown(id='dpdn-col-selection', multi=True, value=['ID', 'year'], # default select all?
                         options=[{'label':column, 'value':column} for column in sorted(df_viewer.columns)],  # % sorted ?
                         style = {"margin-bottom":"18px"}),
             dcc.Checklist(
@@ -98,6 +105,7 @@ app.layout = dbc.Container([
                 style={"height":300, "width":415, "overflow":"auto", "fontSize":18, "margin-bottom":"18px"},
                 labelClassName='pb-1',
                 value=[]),
+            html.Button(id='btn-col-all', n_clicks=0, children="Select all", style={"margin-right":"250px"}),
             html.Button(id='btn-col-selection', n_clicks=0, children="Update")  ## you should place to the right side
             ], width = {'size':4}
         ),
@@ -128,6 +136,10 @@ app.layout = dbc.Container([
 # Callback Section
 # --------------------------------------------------------------
 
+"""
+data selection
+dropdown, checklist
+"""
 # # Data selection
 # by Dropdown 
 @app.callback(
@@ -150,34 +162,6 @@ def update_data(selected_data):
     checklist_col_selection = [{'label':column, 'value':column} for column in (df_viewer.columns)]
     
     return [selected_data], df_viewer.to_dict('records'), dpdn_col_selection, checklist_col_selection
-# by checklist
-
-
-
-# button for viewer update -> data print?
-@app.callback(
-    Output(component_id='data-viewer', component_property='data'),
-    # Input(component_id='data-viewer', component_property='data'),
-    Input(component_id='btn-col-selection', component_property='n_clicks'),
-    # Input(compoenet_id='dpdn-data-selection', compoenent_property='value'),
-    Input(component_id='dpdn-col-selection', component_property='value')
-)
-def viewer_update(n_clicks, selected_columns):
-    if n_clicks>0:
-        print('tes')
-    print(df_viewer)
-    df_viewer = df_viewer[selected_columns]
-
-    return df_viewer.to_dict('records')
-
-
-# @app.callback(
-    # Output(component_id='data-viewer', component_property='data'),
-#     Input(component_id='data-viewer', component_property='data')
-# )
-# def viewer_update(data):
-#     print(data)
-    # return data
 
 # # need to change to multiple checklist -> single
 # @app.callback(
@@ -188,20 +172,78 @@ def viewer_update(n_clicks, selected_columns):
 #     return [selected_data]
 
 
-# **** Done -> need to change to interactive
+
+"""
+columns selection
+dropdown, checklist, button-selcect specific columns, button-select all columns
+"""
+# # **** Done -> need to change to interactive
 # # Columns selection
+@app.callback(
+    Output(component_id='checklist-col-selection', component_property='value'),
+    Input(component_id='dpdn-col-selection', component_property='value')
+)
+def update_columns(selected_columns):
+    return selected_columns
+@app.callback(
+    Output(component_id='dpdn-col-selection', component_property='value'),
+    Input(component_id='checklist-col-selection', component_property='value')
+)
+def update_columns(selected_columns):
+    return selected_columns
+
+
+# # **** Done -> button for viewer update  <Do I need to load data from data-viewer?>
+"""aboarted"""
 # @app.callback(
-#     Output(component_id='checklist-col-selection', component_property='value'),
+#     Output(component_id='data-viewer', component_property='data'),
+#     Input(component_id='data-viewer', component_property='data'),
+#     Input(component_id='btn-col-selection', component_property='n_clicks'),
 #     Input(component_id='dpdn-col-selection', component_property='value')
 # )
-# def update_columns(selected_columns):
-#     return selected_columns
-# @app.callback(
-#     Output(component_id='dpdn-col-selection', component_property='value'),
-#     Input(component_id='checklist-col-selection', component_property='value')
-# )
-# def update_columns(selected_columns):
-#     return selected_columns
+# def viewer_update(data, n_clicks, selected_columns):
+#     if n_clicks>0:
+#         print('tes')
+#     # data.loc[:,['ID']]
+#     print(len(data))
+#     df = {key:data[key] for key in selected_columns}
+#     print(df)
+#     # print(selected_columns)
+
+#     return data
+#     # return df_viewer.to_dict('records')
+
+@app.callback(
+    Output(component_id='dpdn-col-selection', component_property='value'),
+    Input(component_id='btn-col-all',component_property='n_clicks'),
+    Input(component_id='dpdn-data-selection', component_property='value')
+)
+def select_all_columns(n_clicks, selected_data):
+    if n_clicks % 2 == 1:
+        file_path = data_path + '/' + selected_data
+        data_cols = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
+        data_cols = data_cols.loc[:, ~data_cols.columns.str.contains("wt_")]
+        data_cols = data_cols.columns
+
+    else:
+        data_cols = []
+    
+    return data_cols
+@app.callback(
+    Output(component_id='data-viewer', component_property='data'),
+    Input(component_id='btn-col-selection', component_property='n_clicks'),
+    Input(component_id='dpdn-data-selection', component_property='value'),
+    Input(component_id='dpdn-col-selection', component_property='value')
+)
+def viewer_update(n_clicks, selected_data, selected_columns):
+    if n_clicks > 0:
+        file_path = data_path + '/' + selected_data
+        df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
+        df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
+        df_viewer = df_viewer.loc[:, selected_columns]
+        df_viewer = df_viewer.loc[:15] # need to remove (This line is for programming speed)
+
+        return df_viewer.to_dict('records')
 
 # Update data viewer
 
