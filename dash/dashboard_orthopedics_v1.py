@@ -1,7 +1,6 @@
-# from re import I
 import time
-from dash import Dash, dcc, html, dash_table, State
-from dash_extensions.enrich import Output, DashProxy, Input, MultiplexerTransform
+from dash import Dash
+from dash_extensions.enrich import MultiplexerTransform, DashProxy, dcc, html, dash_table, Input, Output, State
 from dash.exceptions import PreventUpdate
 import plotly.express as px
 import dash_bootstrap_components as dbc
@@ -9,14 +8,17 @@ import pandas as pd
 import pandas_datareader.data as web
 import datetime
 import os
+import io
 
 """
 
 1. Test file -> df_viewer.loc[:15] <remove the line>
 2. dcc.Dropdown(id='dpdn-data-selection', multi=False, value=dir_list[-1], 
-    -> need to change multiple selection mode and make function can merge the selected dataframes
+    -> need to change multiple selection mode and make function can merge the selected year of dataframes
 3. auto width of data-viewer cells
-4. Do I need to set all columns as default when I display data on data viewer?
+4. Do I need to set default columns for data selection part? Then what columns would I do?
+5. need to change the component of columns selection dropdown to using scroll method <layout>
+    -> It's not comfortable to read the data like it would have too long scroll bar when I select all columns
 
 """
 
@@ -25,7 +27,6 @@ global data_path
 data_path = './raw_data'
 dir_list = os.listdir(data_path)
 dir_list.sort()
-
 
 
 """Data load methods"""
@@ -48,14 +49,24 @@ def load_data(file_name,data_path, to_csv=False):
     return df
 
 
-# Default dataframe
+# Initialize dataframe
 df_viewer = pd.read_sas('hn19_all.sas7bdat', encoding='iso-8859-1', format='sas7bdat') ##
+global col_property
+col_property = df_viewer
 
 df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]
 df_viewer = df_viewer.loc[:15] # need to remove
 
 # Application
 # -------------------------------------------------------------
+"""
+transforms=[MultiplexerTransform()]
+    - Was problem : Default -> A component can have output from only ONE other component
+    - Solved by using above method
+prevent_initial_callbacks=True
+    - For the speed of load data have been initialized
+    - It prevents callback functions are activated while on processing classes of component on the app layout are instantiated.
+"""
 app = DashProxy(__name__, prevent_initial_callbacks=True, transforms=[MultiplexerTransform()],external_stylesheets=[dbc.themes.BOOTSTRAP],
             meta_tags=[{'name': 'viewport','content': 'width=device-width, initial-scale=1.0'}])
 
@@ -73,7 +84,7 @@ app.layout = dbc.Container([
     ]),
 
     dbc.Row([
-        # Data selection  * Multiple setting on next version
+        # Data selection  * Multiple setting on next version (merge data)
         dbc.Col([
             dcc.Dropdown(id='dpdn-data-selection', multi=False, value=dir_list[-1],  # need to change to multiple selection mode
                         options = [{'label':x, 'value':x} for x in dir_list],
@@ -114,9 +125,13 @@ app.layout = dbc.Container([
         ),
 
         # Properties of columns
-        dbc.Col([dcc.Graph(id='line-fig3', figure={})], ## need to change
-            width = {'size':3}
-        )
+        dbc.Col(
+            html.H2(
+                id = 'text-col-property',
+                children='',
+                className='text-right text-primary, mb-4',
+                style = {"margin-top":"10px"}), # mb-4 -> some padding
+            width=4)
     ]),
 
     # Data viewer
@@ -155,12 +170,25 @@ def update_data(selected_data):
     """
     file_path = data_path + '/' + selected_data
     df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat')
+    
+    global col_property 
+    col_property = df_viewer
+
     df_viewer = df_viewer.loc[:3]
     df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]
 
     dpdn_col_selection = [{'label':column, 'value':column} for column in (df_viewer.columns)]
-
-    # return [selected_data], df_viewer.to_dict('records'), dpdn_col_selection
+    
+    """
+    Will be aboarted
+    # global col_property
+    # col_property = df_viewer
+    # import io
+    # buffer = io.StringIO()
+    # col_property.info(verbose=False, buf=buffer, memory_usage="deep")
+    # print(buffer.getvalue())
+    # print(type(buffer.getvalue()))
+    """
     return selected_data, df_viewer.to_dict('records'), dpdn_col_selection
 
 # Data selection - Checklist
@@ -177,12 +205,26 @@ def update_data(selected_data):
 # Columns selection - Dropdown
 @app.callback(
     Input(component_id='dpdn-col-selection', component_property='value'),
-    Output(component_id='checklist-col-selection', component_property='value')
+    Output(component_id='checklist-col-selection', component_property='value'),
+    Output(component_id='text-col-property', component_property='children')
 )
 def update_selected_columns_list(selected_columns):
     if len(selected_columns) > 0:
-        print(type(selected_columns[-1]))
-    return selected_columns
+        selected_column = selected_columns[-1]
+        property_column = col_property[selected_column]
+        
+        """Need different specification of variable property"""
+        buffer = io.StringIO()
+        # col_property.info(verbose=False, buf=buffer, memory_usage="deep")
+        property_column.info(verbose=True, buf=buffer)
+        col_property_info = buffer.getvalue()
+        col_property_info = col_property_info.replace("<class 'pandas.core.series.Series'>","")
+        col_property_info = col_property_info.replace("-","")
+        # col_property_info = col_property_info.replace(" ","")
+
+        return selected_columns, col_property_info
+    else:    
+        return selected_columns, ''
 
 # Columns selection - Checklist
 @app.callback(
@@ -233,4 +275,5 @@ def viewer_update(n_clicks, selected_data, selected_columns):
 # Application RUN
 
 if __name__ == '__main__':
-    app.run_server(debug=True) # port= 
+    app.run_server(debug=True) 
+    # app.run_server(debug=True, port=) # If you need to set port number
