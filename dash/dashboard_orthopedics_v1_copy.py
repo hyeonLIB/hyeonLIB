@@ -5,7 +5,6 @@ from dash.exceptions import PreventUpdate
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import pandas as pd
-import pandas_datareader.data as web
 import datetime
 import os
 import io
@@ -14,7 +13,7 @@ import io
 
 1. Test file -> df_viewer.loc[:15] <remove the line>
 2. dcc.Dropdown(id='dpdn-data-selection', multi=False, value=dir_list[-1], 
-    -> need to change multiple selection mode and make function can merge the selected dataframes
+    -> need to change multiple selection mode and make function can merge the selected year of dataframes
 3. auto width of data-viewer cells
 4. Do I need to set default columns for data selection part? Then what columns would I do?
 5. need to change the component of columns selection dropdown to using scroll method <layout>
@@ -47,6 +46,31 @@ def load_data(file_name,data_path, to_csv=False):
     # print(df.columns.tolist())
     
     return df
+
+def properties_specification(df_viewer, selected_column):
+    total_data = len(df_viewer)
+    missing_data_count = col_property.isnull().sum()
+    responds_data_count = total_data - missing_data_count
+    rate_missing_data_count = missing_data_count/total_data * 100
+
+    if type(df_viewer.loc[1,selected_column])==str:
+        properties = {
+            "total_data":f"{total_data}",
+            "responds_data":f"{responds_data_count[selected_column]}",
+            "missing_data":f"{missing_data_count[selected_column]}", 
+            "missing_data_rate":f"{rate_missing_data_count[selected_column]}%"
+        }
+        print("categorical value")
+    else:
+        properties = {
+            "total_data":f"{total_data}",
+            "responds_data":f"{responds_data_count[selected_column]}",
+            "missing_data":f"{missing_data_count[selected_column]}", 
+            "missing_data_rate":f"{rate_missing_data_count[selected_column]}%"
+        }
+        print("numberable value")
+    
+    return properties
 
 
 # Initialize dataframe
@@ -126,13 +150,33 @@ app.layout = dbc.Container([
 
         # Properties of columns
         dbc.Col(
-            html.H2(
-                id = 'text-col-property',
+            [html.H4(
+                id = 'text-col-property1',
                 children='',
                 className='text-right text-primary, mb-4',
+                # className='mb-4',
                 style = {"margin-top":"10px"}), # mb-4 -> some padding
-            width=4)
-    ]),
+            html.H4(
+                id = 'text-col-property2',
+                children='',
+                className='text-right text-primary, mb-4',
+                # className='mb-4',
+                style = {"margin-top":"10px"}),
+            html.H4(
+                id = 'text-col-property3',
+                children='',
+                className='text-right text-primary, mb-4',
+                # className='mb-4',
+                style = {"margin-top":"10px"}),
+            html.H4(
+                id = 'text-col-property4',
+                children='',
+                className='text-right text-primary, mb-4',
+                # className='mb-4',
+                style = {"margin-top":"10px"})
+            ],width=4
+        ),
+        ]),
 
     # Data viewer
     dbc.Row([ 
@@ -206,26 +250,40 @@ def update_data(selected_data):
 @app.callback(
     Input(component_id='dpdn-col-selection', component_property='value'),
     Output(component_id='checklist-col-selection', component_property='value'),
-    Output(component_id='text-col-property', component_property='children')
+    Output(component_id='text-col-property1', component_property='children'),
+    Output(component_id='text-col-property2', component_property='children'),
+    Output(component_id='text-col-property3', component_property='children'),
+    Output(component_id='text-col-property4', component_property='children')
 )
 def update_selected_columns_list(selected_columns):
+    # different layout if the type is different
     if len(selected_columns) > 0:
-        selected_column = selected_columns[-1]
-        property_column = col_property[selected_column]
-        
-        """Need different specification of variable property"""
-        buffer = io.StringIO()
-        # col_property.info(verbose=False, buf=buffer, memory_usage="deep")
-        property_column.info(verbose=True, buf=buffer)
-        col_property_info = buffer.getvalue()
-        col_property_info = col_property_info.replace("<class 'pandas.core.series.Series'>","")
-        col_property_info = col_property_info.replace("-","")
-        # col_property_info = col_property_info.replace(" ","")
-        # print(col_property_inf)
+        selected_column = selected_columns[-1] # col_property
 
-        return selected_columns, col_property_info
+        col_property_info = properties_specification(col_property, selected_column)
+
+        """
+        # Specification property
+        total
+        responds
+        missing
+        missing rate
+        """
+        # to text!
+        """
+        전체
+        응답수
+        결측수
+        결측비
+        """
+        total =         f"| 전  체        {col_property_info['total_data']}"
+        responds=       f"| 응답수        {col_property_info['responds_data']}"
+        missing=        f"| 결측수        {col_property_info['missing_data']}"
+        missing_rate =  f"| 결측비        {col_property_info['missing_data_rate']}"
+        
+        return selected_columns, total, responds, missing, missing_rate
     else:    
-        return selected_columns, ''
+        return selected_columns, '','','',''
 
 # Columns selection - Checklist
 @app.callback(
@@ -263,11 +321,16 @@ def viewer_update(n_clicks, selected_data, selected_columns):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        file_path = data_path + '/' + selected_data
-        df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
-        df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
-        df_viewer = df_viewer.loc[:, selected_columns] # ##
-        df_viewer = df_viewer.loc[:15] # need to remove (This line is for programming speed)
+        if selected_columns == []:
+            file_path = data_path + '/' + selected_data
+            df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
+            df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
+        else:
+            file_path = data_path + '/' + selected_data
+            df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
+            df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
+            df_viewer = df_viewer.loc[:, selected_columns] # ##
+            df_viewer = df_viewer.loc[:15] # need to remove (This line is for programming speed)
 
         return df_viewer.to_dict('records')
 
@@ -276,5 +339,6 @@ def viewer_update(n_clicks, selected_data, selected_columns):
 # Application RUN
 
 if __name__ == '__main__':
-    app.run_server(debug=True) 
+    app.run_server(debug=True)
+    # app.run_server(debug=False) 
     # app.run_server(debug=True, port=) # If you need to set port number
