@@ -5,7 +5,6 @@ from dash.exceptions import PreventUpdate
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import pandas as pd
-import pandas_datareader.data as web
 import datetime
 import os
 import io
@@ -212,7 +211,7 @@ def update_selected_columns_list(selected_columns):
     if len(selected_columns) > 0:
         selected_column = selected_columns[-1]
         property_column = col_property[selected_column]
-        
+        print(col_property)
         """Need different specification of variable property"""
         buffer = io.StringIO()
         # col_property.info(verbose=False, buf=buffer, memory_usage="deep")
@@ -262,11 +261,16 @@ def viewer_update(n_clicks, selected_data, selected_columns):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        file_path = data_path + '/' + selected_data
-        df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
-        df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
-        df_viewer = df_viewer.loc[:, selected_columns] # ##
-        df_viewer = df_viewer.loc[:15] # need to remove (This line is for programming speed)
+        if selected_columns == []:
+            file_path = data_path + '/' + selected_data
+            df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
+            df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
+        else:
+            file_path = data_path + '/' + selected_data
+            df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
+            df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
+            df_viewer = df_viewer.loc[:, selected_columns] # ##
+            df_viewer = df_viewer.loc[:15] # need to remove (This line is for programming speed)
 
         return df_viewer.to_dict('records')
 
@@ -275,5 +279,6 @@ def viewer_update(n_clicks, selected_data, selected_columns):
 # Application RUN
 
 if __name__ == '__main__':
-    app.run_server(debug=True) 
+    app.run_server(debug=True)
+    # app.run_server(debug=False) 
     # app.run_server(debug=True, port=) # If you need to set port number
