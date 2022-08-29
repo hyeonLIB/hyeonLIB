@@ -79,13 +79,13 @@ app.layout = dbc.Container([
             dcc.Dropdown(id='dpdn-data-selection', multi=False, value=dir_list[-1],  # need to change to multiple selection mode
                         options = [{'label':x, 'value':x} for x in dir_list],
                         style = {"margin-bottom":"18px"}),
-            dcc.Checklist(
-                id="checklist-data-selection",
-                options=[{"label": file_name, "value": file_name} for file_name in dir_list],
-                labelStyle={"display": "block"},
-                style={"height":300, "width":415, "overflow":"auto", "fontSize":18},
-                labelClassName='pb-3',
-                value=[''])
+            # dcc.Checklist(
+            #     id="checklist-data-selection",
+            #     options=[{"label": file_name, "value": file_name} for file_name in dir_list],
+            #     labelStyle={"display": "block"},
+            #     style={"height":300, "width":415, "overflow":"auto", "fontSize":18},
+            #     labelClassName='pb-3',
+            #     value=[''])
             # dcc.RadioItems( # need to change to checklist that can offer dataframe merge
             #     id="radiobtn-data-selection",
             #     options=[{"label": file_name, "value": file_name} for file_name in dir_list],
@@ -94,6 +94,21 @@ app.layout = dbc.Container([
             #     labelClassName='pb-3',
             #     value=[]
             # )
+            dash_table.DataTable(
+                id='table-col-selection',
+                # columns=[{'name': i, 'id':i} for i in df_viewer.columns],
+                # data=df_viewer.to_dict('records'),
+                columns=[{'name':'col_name','id':'col_name'},{'name':'col_type','id':'col_type'}],
+                # df.iloc[i]['BoolCol']
+                data=[{'col_name':i,'col_type':type(df_viewer.iloc[1][i])} for i in df_viewer.columns],
+                virtualization=True,
+                row_selectable='multi',
+                selected_rows=[],
+                fixed_rows={'headers': True},
+                style_cell={'minWidth': 70, 'width': 100, 'maxWidth': 140},
+                # style_cell={"autoWidth":True}, # need to find some other method for adjust auto width
+                style_table={'height': 400},
+            )
             ], width = {'size':4}
         ),
         
@@ -223,8 +238,9 @@ def viewer_update(n_clicks_timestamp, n_clicks, selected_data, selected_columns)
             df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
             df_viewer = df_viewer.loc[:, selected_columns]
             df_viewer = df_viewer.loc[:15] # need to remove (This line is for programming speed)
-
-            return df_viewer.to_dict('records')
+            a = df_viewer.to_dict('records')
+            print(a)
+            return a
         else:
             raise PreventUpdate
     
@@ -233,8 +249,10 @@ def viewer_update(n_clicks_timestamp, n_clicks, selected_data, selected_columns)
         df_viewer = pd.read_sas(file_path, encoding='iso-8859-1', format='sas7bdat') ##
         df_viewer = df_viewer.loc[:, ~df_viewer.columns.str.contains("wt_")]  # If you want to check whether it works properly or not, you could make this line as annotation
         df_viewer = df_viewer.loc[:15] # need to remove (This line is for programming speed)
-
-        return df_viewer.to_dict('records')
+        
+        a = df_viewer.to_dict('records')
+        print(a)
+        return a
 
 
 

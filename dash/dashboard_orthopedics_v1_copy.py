@@ -59,6 +59,7 @@ def properties_specification(df_viewer, selected_column):
             "responds_data":f"{responds_data_count[selected_column]}",
             "missing_data":f"{missing_data_count[selected_column]}", 
             "missing_data_rate":f"{rate_missing_data_count[selected_column]}%"
+            "class"
         }
         print("categorical value")
     else:
@@ -120,6 +121,7 @@ app.layout = dbc.Container([
             #     style={"height":300, "width":415, "overflow":"auto", "fontSize":18},
             #     labelClassName='pb-3',
             #     value=[''])
+
             dcc.RadioItems( # -> need to change to checklist that can offer dataframe merge
                 id="radiobtn-data-selection",
                 options=[{"label": file_name, "value": file_name} for file_name in dir_list],
@@ -128,6 +130,7 @@ app.layout = dbc.Container([
                 labelClassName='pb-3',
                 value=dir_list[-1]
             )
+            
             ], width = {'size':4}
         ),
         
@@ -136,16 +139,48 @@ app.layout = dbc.Container([
             dcc.Dropdown(id='dpdn-col-selection', multi=True, value=[], # default select all?
                         options=[{'label':column, 'value':column} for column in sorted(df_viewer.columns)],  # % sorted ?
                         style = {"margin-bottom":"18px"}),
-            dcc.Checklist(
-                id="checklist-col-selection",
-                options=[{"label": column, "value": column} for column in df_viewer.columns],  
-                labelStyle={"display": "block"},
-                style={"height":300, "width":415, "overflow":"auto", "fontSize":18, "margin-bottom":"18px"},
-                labelClassName='pb-1',
-                value=[]),
-            html.Button(id='btn-col-all', n_clicks=0, children="Select all", style={"margin-right":"250px"}),
-            html.Button(id='btn-col-update', n_clicks=0, n_clicks_timestamp=0, children="Update")  ## you should place to the right side
-            ], width = {'size':4}
+
+            # need to change talbe
+            # dcc.Checklist(
+            #     id="checklist-col-selection",
+            #     options=[{"label": column, "value": column} for column in df_viewer.columns],  
+            #     labelStyle={"display": "block"},
+            #     style={"height":300, "width":415, "overflow":"auto", "fontSize":18, "margin-bottom":"18px"},
+            #     labelClassName='pb-1',
+            #     value=[]),
+            # html.Button(id='btn-col-all', n_clicks=0, children="Select all", style={"margin-right":"250px"}),
+            # html.Button(id='btn-col-update', n_clicks=0, n_clicks_timestamp=0, children="Update")  ## you should place to the right side
+            # ], width = {'size':4}
+
+
+            dash_table.DataTable(
+                id='table-col-selection',
+                # columns=[{'name': i, 'id':i} for i in df_viewer.columns],
+                # data=df_viewer.to_dict('records'),
+                columns=[{'name':'col_name','id':'col_name'},{'name':'col_type','id':'col_type'}],
+                # df.iloc[i]['BoolCol']
+                # data=[{'col_name':i,'col_type':type(df_viewer.iloc[1][i])} for i in df_viewer.columns],
+                data=[{'col_name':i,'col_type':str(type(df_viewer.iloc[1][i])).replace("<class '",'').replace("'>",'')} for i in df_viewer.columns],
+                virtualization=True,
+                row_selectable='multi',
+                selected_rows=[],
+                fixed_rows={'headers': True},
+                style_cell={'minWidth': 70, 'width': 100, 'maxWidth': 140, 'padding-right': '30px'},
+                # style_cell={"autoWidth":True}, # need to find some other method for adjust auto width
+                style_table={'height': 300},
+                style_cell_conditional=[
+                    {
+                        'if': {'column_id': i},
+                        'textAlign': 'left',
+                        'padding-left' : '20px', 
+                    } for i in ['col_name']
+                ],
+                # style_cell={'font-size':'2.5vh', 'fontFamily':'Bebas Neue', 'height':'4vh', 'color': 'rgb(180, 180, 180)', 'backgroundColor': 'rgb(57, 57, 57)'},
+                # style_table={},
+                style_as_list_view=True,
+                # style_data = [{'border': 'none'}],
+            )
+        ], width = {'size':4}
         ),
 
         # Properties of columns
@@ -182,9 +217,10 @@ app.layout = dbc.Container([
     dbc.Row([ 
         dash_table.DataTable(
             id='data-viewer',
+            columns=[{'name': i, 'id':i, 'deletable':True, 'selectable':False} for i in df_viewer.columns],
             data=df_viewer.to_dict('records'),
-            columns=[{'id': i, 'name': i} for i in df_viewer.columns],
             virtualization=True,
+            filter_action='native',
             fixed_rows={'headers': True},
             style_cell={'minWidth': 70, 'width': 100, 'maxWidth': 140},
             # style_cell={"autoWidth":True}, # need to find some other method for adjust auto width
