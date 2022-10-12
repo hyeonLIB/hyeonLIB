@@ -47,7 +47,6 @@ function CheckEmptyContainer(arr) {
 }
 
 Frame()
-var arr1 = ["age", "incm","sex"]
-var arr2 = ["1", "2", "3"]
+var arr1 = ["age", "incm","sex","age", "incm","sex","age", "incm","sex","age", "incm","sex","age", "incm","sex","age", "incm","sex","age", "incm","sex"]
 
 CheckEmptyContainer(arr1)
