@@ -1,0 +1,93 @@
+.container {
+    background-color: #222;
+    color: black;
+}
+
+.row1 {
+    background-color: white;
+    color: black;
+    /* border-style: solid;
+    border-bottom: 0ch; */
+    height: 70px;
+}
+.row2 {
+    background-color: white;
+    color: black;
+    height: 500px;
+    /* border-style: solid;
+    border-top: 0ch; */
+}
+
+.item {
+    padding: 1rem;
+    background-color: white;
+    border: 1px solid black;
+    margin-top: 3px;
+    cursor: move;
+    width: 30px;
+    height: 0.5%;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.empty {
+    background-color: white;
+    width: 10%;
+    height: 70%;
+    padding: 5px;
+    margin-left: 5px;
+    display: inline-block;
+}
+.dropdown {
+    background-color: white;
+    width: 10%;
+    height: 70%;
+    padding: 5px;
+    border-style: solid;
+    margin-left: 2px;
+    display: inline-block;
+}
+.hcontainer {
+    background-color: beige;
+    width: 70%;
+    height: 70%;
+    padding: 5px;
+    margin-top: 1px;
+    margin-left:2px;
+    border-style: solid;
+    display: inline-block;
+    overflow-x:auto;
+}
+
+.scontainer {
+    background-color: grey;
+    width: 10%;
+    height: 95%;
+    padding: 5px;
+    margin-top: 1px;
+    border-style: solid;
+    display: inline-block;
+    overflow-y:auto;
+}
+.vcontainer{
+    background-color: beige;
+    width: 10%;
+    height: 95%;
+    padding: 5px;
+    margin-top: 1px;
+    margin-left:2px;
+    border-style: solid;
+    display: inline-block;
+    overflow-y:auto;
+}
+
+.gcontainer {
+    background-color: white;
+    width: 70%;
+    height:95%;
+    padding: 5px;
+    margin-top: 1px;
+    margin-left:2px;
+    border-style: solid;
+    display: inline-block;
+}
