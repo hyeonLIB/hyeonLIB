@@ -20,8 +20,11 @@ function Frame() {
     
     emptyspace.classList.add("empty")
     dpdnComponent.classList.add("dropdown")
+    horizontal_container.classList.add("container")
     horizontal_container.classList.add("hcontainer")
+    col_selector.classList.add("container")
     col_selector.classList.add("scontainer")
+    vertical_container.classList.add("container")
     vertical_container.classList.add("vcontainer")
     graph_container.classList.add("gcontainer")
     

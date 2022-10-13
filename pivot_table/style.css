@@ -45,7 +45,13 @@
     margin-left: 2px;
     display: inline-block;
 }
-.hcontainer {
+.container {
+    background-color: #333;
+    padding: 5px;
+    margin-top: 1px;
+}
+
+.container.hcontainer {
     background-color: beige;
     width: 70%;
     max-width: 500px;
@@ -58,7 +64,7 @@
     overflow-x:auto;
 }
 
-.scontainer {
+.container.scontainer {
     background-color: grey;
     width: 10%;
     max-width: 80px;
@@ -71,7 +77,8 @@
     scrollbar-width: none;
     overflow-y: scroll;
 }
-.vcontainer{
+
+.container.vcontainer{
     background-color: beige;
     width: 10%;
     max-width: 80px;
