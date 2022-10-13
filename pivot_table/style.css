@@ -61,6 +61,7 @@
     padding: 5px;
     margin-top: 1px;
     align-items: center;
+    border-radius: 5px;
 }
 
 .container.hcontainer {
@@ -116,4 +117,5 @@
     margin-left:2px;
     border-style: solid;
     display: inline-block;
+    border-radius: 5px;
 }
