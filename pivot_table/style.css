@@ -19,18 +19,18 @@
     background-color: white;
     border: 1px solid black;
     margin-top: 3px;
+    margin-bottom: 0.5rem;
     cursor: move;
     width: 30px;
-    height: 0.5%;
+    height: 5px;
+    vertical-align: middle;
     text-align: center;
     border-radius: 10px;
 }
 .item.horizontal {
-    position: relative;
-    margin-top: 2rem;
-    width: 30px;
-    height: 0.5%;
-    display:inline;
+    /* position: relative; */
+    margin-right: 1rem;
+    display: inline-block;
 }
 
 .item.dragging {
@@ -43,7 +43,7 @@
     max-width: 80px;
     height: 70%;
     padding: 5px;
-    margin-left: 5px;
+    margin-left: 6px;
     display: inline-block;
 }
 .dropdown {
@@ -58,7 +58,7 @@
 }
 .container {
     background-color: #333;
-    padding: 5px;
+/*     padding: 5px; */
     margin-top: 1px;
     align-items: center;
     border-radius: 5px;
@@ -89,7 +89,7 @@
     border-style: solid;
     display: inline-block;
     scrollbar-width: none;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .container.vcontainer{
