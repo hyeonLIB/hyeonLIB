@@ -3,8 +3,10 @@ const row1 = document.querySelector(".row1")
 const row2 = document.querySelector(".row2")
 
 function NewItem(column) {
-    const newItem = document.createElement("div")
+    const newItem = document.createElement("p")
     newItem.classList.add("item")
+    newItem.draggable = true
+    newItem.id = column
     newItem.textContent = column
     const col_selector = document.querySelector(".scontainer")
     col_selector.appendChild(newItem)
@@ -27,6 +29,13 @@ function Frame() {
     vertical_container.classList.add("container")
     vertical_container.classList.add("vcontainer")
     graph_container.classList.add("gcontainer")
+
+    emptyspace.id="empty"
+    dpdnComponent.id="dropdown"
+    horizontal_container.id="hcontainer"
+    col_selector.id="scontainer"
+    vertical_container.id="vcontainer"
+    graph_container.id="gcontainer"
     
     row1.appendChild(emptyspace)
     row1.appendChild(dpdnComponent)
@@ -53,3 +62,50 @@ Frame()
 var arr1 = ["age", "incm","sex","age", "incm","sex","age", "incm","sex"]
 
 CheckEmptyContainer(arr1)
+
+const items = document.querySelectorAll('.item')
+const containers = document.querySelectorAll('.container')
+
+items.forEach(item => {
+    item.addEventListener('dragstart', () =>{
+        item.classList.add('dragging')
+    })
+    item.addEventListener('dragend', () =>{
+        item.classList.remove('dragging')
+    })
+})
+
+containers.forEach(container => {
+    container.addEventListener('dragover', e => {
+        e.preventDefault()
+        const afterElement = getDragAfterElement(container, e.clientY)
+        const dragging = document.querySelector('.dragging')
+        const newItem = document.createElement('item')
+        if (container.id == 'hcontainer' && dragging.classList.length == 2) {
+            dragging.classList.add('horizontal')
+        } else if (container.id != 'hcontainer' && dragging.classList.length==3) {
+            dragging.classList.remove('horizontal')
+        }
+
+        container.appendChild(newItem)
+        if (afterElement == null) {
+            container.appendChild(dragging)
+        } else {
+            container.insertBefore(dragging, afterElement)
+        }
+    })
+})
+
+function getDragAfterElement(container,y) {
+    const draggableElements = [...container.querySelectorAll('.item:not(.dragging)')]
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect()
+        const offset = y - box.top - box.height / 2
+        if (offset<0 && offset > closest.offset) {
+            return { offset: offset, element: child }
+        } else {
+            return closest
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element
+}
