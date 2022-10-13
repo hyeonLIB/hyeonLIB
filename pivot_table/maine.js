@@ -1,3 +1,4 @@
+// frame
 const app = document.querySelector(".app")
 const row1 = document.querySelector(".row1")
 const row2 = document.querySelector(".row2")
@@ -63,6 +64,7 @@ var arr1 = ["age", "incm","sex","age", "incm","sex","age", "incm","sex"]
 
 CheckEmptyContainer(arr1)
 
+// Drag and drop function
 const items = document.querySelectorAll('.item')
 const containers = document.querySelectorAll('.container')
 
@@ -72,6 +74,17 @@ items.forEach(item => {
     })
     item.addEventListener('dragend', () =>{
         item.classList.remove('dragging')
+        var Xelements = document.getElementById("hcontainer").getElementsByTagName("p");
+        var Yelements = document.getElementById("vcontainer").getElementsByTagName("p");
+        var Xarr = []
+        var Yarr = []
+        for (var i = 0; i < Xelements.length; i++) {
+            Xarr.push(Xelements[i].id)
+        }
+        for (var i = 0; i < Yelements.length; i++) {
+            Yarr.push(Yelements[i].id)
+        }
+        console.log(Xarr, Yarr)
     })
 })
 
@@ -80,14 +93,11 @@ containers.forEach(container => {
         e.preventDefault()
         const afterElement = getDragAfterElement(container, e.clientY)
         const dragging = document.querySelector('.dragging')
-        const newItem = document.createElement('item')
         if (container.id == 'hcontainer' && dragging.classList.length == 2) {
             dragging.classList.add('horizontal')
         } else if (container.id != 'hcontainer' && dragging.classList.length==3) {
             dragging.classList.remove('horizontal')
         }
-
-        container.appendChild(newItem)
         if (afterElement == null) {
             container.appendChild(dragging)
         } else {
