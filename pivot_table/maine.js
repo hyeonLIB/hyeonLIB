@@ -91,7 +91,7 @@ items.forEach(item => {
 containers.forEach(container => {
     container.addEventListener('dragover', e => {
         e.preventDefault()
-        const afterElement = getDragAfterElement(container, e.clientY)
+        const afterElement = getDragAfterElement(container ,e.clientX, e.clientY)
         const dragging = document.querySelector('.dragging')
         if (container.id == 'hcontainer' && dragging.classList.length == 2) {
             dragging.classList.add('horizontal')
@@ -106,16 +106,28 @@ containers.forEach(container => {
     })
 })
 
-function getDragAfterElement(container,y) {
+function getDragAfterElement(container,x,y) {
     const draggableElements = [...container.querySelectorAll('.item:not(.dragging)')]
 
-    return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect()
-        const offset = y - box.top - box.height / 2
-        if (offset<0 && offset > closest.offset) {
-            return { offset: offset, element: child }
-        } else {
-            return closest
-        }
-    }, { offset: Number.NEGATIVE_INFINITY }).element
+    if (container.id =='hcontainer') {
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect()
+            const offset = x - box.left - box.right / 2
+            if (offset<0 && offset > closest.offset) {
+                return { offset: offset, element: child }
+            } else {
+                return closest
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element
+    } else {
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect()
+            const offset = y - box.top - box.height / 2
+            if (offset<0 && offset > closest.offset) {
+                return { offset: offset, element: child }
+            } else {
+                return closest
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element
+    }
 }
