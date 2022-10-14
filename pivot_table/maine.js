@@ -13,8 +13,49 @@ function NewItem(column) {
     col_selector.appendChild(newItem)
 }
 
+function createDropDownItem(dropdown_content, element, component) {
+    const dropdown_item = document.createElement("a")
+    dropdown_item.href = "#"
+    dropdown_item.id = "dropdown-item-"+component+"-"+element
+    dropdown_item.textContent=element
+    
+    dropdown_content.appendChild(dropdown_item)
+}
+
+function createDropDown(component) {
+    // gelements outside of this function
+    const elements = ["Box Plot", "Scatter Plot", "Histogram", "Line Plot"]
+    
+    // dropdown component
+    const dropdown = document.createElement("div")
+    dropdown.classList.add("dropdown")
+    dropdown.id = "dropdown-"+component
+    // row1.appendChild(dropdown) //
+
+    // dropdown button
+    const dropdown_button = document.createElement("button")
+    dropdown_button.classList.add("dropdown")
+    dropdown_button.classList.add("button")
+    dropdown_button.id = "dropdown-button-"+component
+    dropdown_button.textContent= component+" selection"
+    
+    const dropdown_content = document.createElement("div")
+    dropdown_content.classList.add("dropdown")
+    dropdown_content.classList.add("content")
+    dropdown_content.id = "dropdown-content-"+component
+    for (var i = 0; i < elements.length; i++) {
+        createDropDownItem(dropdown_content, elements[i], component)
+    }
+
+    dropdown.appendChild(dropdown_button)
+    dropdown.appendChild(dropdown_content)
+
+    return dropdown
+}
+
 function Frame() {
     const emptyspace = document.createElement("span")
+    const graphDropDown = createDropDown("graph")
     const dpdnComponent = document.createElement("span")
     const horizontal_container = document.createElement("span")
     const col_selector = document.createElement("span")
@@ -39,6 +80,7 @@ function Frame() {
     graph_container.id="gcontainer"
     
     row1.appendChild(emptyspace)
+    emptyspace.appendChild(graphDropDown)
     row1.appendChild(dpdnComponent)
     row1.appendChild(horizontal_container)
     row2.appendChild(col_selector)
@@ -49,6 +91,9 @@ function Frame() {
     app.appendChild(row2)
 }
 
+Frame()
+
+// columns input
 function CheckEmptyContainer(arr) {
     if (document.querySelector('.scontainer:empty')) {
         for (i=0; i<arr.length; i++) {
@@ -59,10 +104,39 @@ function CheckEmptyContainer(arr) {
     }
 }
 
-Frame()
-var arr1 = ["age", "incm","sex","age", "incm","sex","age", "incm","sex"]
+
+var arr1 = ["age", "incm","sex","age", "incm","sex","age", "incm","sex"] // from json
 
 CheckEmptyContainer(arr1)
+
+
+// dropdown function
+const buttonDropDowns = document.querySelectorAll(".dropdown.button")
+buttonDropDowns.forEach(buttonDropDown => {
+    buttonDropDown.addEventListener('click', () => {
+        const content_dropdown = document.getElementById("dropdown-content-graph")
+        content_dropdown.classList.toggle("show")
+        const DropDownitems = document.querySelectorAll(".dropdown.content a")
+        DropDownitems.forEach(DropDownItem => {
+            DropDownItem.addEventListener('click', () => {
+                console.log(DropDownItem.textContent)
+                buttonDropDown.textContent = DropDownItem.textContent // to json + if condition
+            })
+        })
+    })
+})
+
+window.onclick = function(event) {
+    if (!event.target.matches('.dropdown.button')) {
+        var dropdowns = document.querySelectorAll(".dropdown.content");
+        dropdowns.forEach(dropdown => {
+            if (dropdown.classList.contains('show')){
+                dropdown.classList.remove('show')
+            }
+        })
+    }
+}
+
 
 // Drag and drop function
 const items = document.querySelectorAll('.item')
@@ -84,7 +158,8 @@ items.forEach(item => {
         for (var i = 0; i < Yelements.length; i++) {
             Yarr.push(Yelements[i].id)
         }
-        console.log(Xarr, Yarr)
+        console.log(Xarr, Yarr) // to json
+        // func for graphic
     })
 })
 
@@ -108,7 +183,6 @@ containers.forEach(container => {
 
 function getDragAfterElement(container,x,y) {
     const draggableElements = [...container.querySelectorAll('.item:not(.dragging)')]
-
     if (container.id =='hcontainer') {
         return draggableElements.reduce((closest, child) => {
             const box = child.getBoundingClientRect()
