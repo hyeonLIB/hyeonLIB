@@ -29,9 +29,10 @@ graph_type = input['graph_type']
 
 print(x_columns,y_columns,graph_type)
 
-def drawGraph(x_columns, y_columns,graph_type):
+def drawGraph(x_columns, y_columns,graph_type, main_dataframe):
     if graph_type == 'scatter':
-        fig =px.scatter(x=df_viewer['sex'], y=df_viewer['age'])
+        # fig =px.scatter(x=df_viewer['sex'], y=df_viewer['age'])
+        fig = px.scatter(x=main_dataframe.loc[:,x_columns],y=main_dataframe.loc[:,y_columns])
         fig.write_html("./testfile.html")
         return fig
     elif graph_type == 'box plot':
@@ -40,5 +41,7 @@ def drawGraph(x_columns, y_columns,graph_type):
         return graph_type
     elif graph_type == 'histogram':
         return graph_type
+
+graph = drawGraph(x_columns, y_columns, graph_type, main_dataframe)
 
 print("Generating px graph has been done")
