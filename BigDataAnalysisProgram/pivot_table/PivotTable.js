@@ -206,8 +206,10 @@ function getDragAfterElement(container,x,y) {
     }
 }
 
-function drawGraph(x_col, y_col, graph_type) {
-    const spawner = require('child_process').spawn;
+const spawner = require('child_process').spawn
+
+function drawGraph(x_col, y_col, graph_type, spawner) {
+    // const spawner = require('child_process').spawn;
 
     const data_to_pass_in = {'x_col':x_col,'y_col':y_col,'graph_type':graph_type};
 
@@ -218,4 +220,11 @@ function drawGraph(x_col, y_col, graph_type) {
     });
 }
 
-drawGraph('sex','age','scatter')
+drawGraph('sex','age','scatter', spawner)
+
+export default function sum(a, b) {
+    return a + b;
+  }
+  
+  // 👇️ named export
+  export const num = 100;
