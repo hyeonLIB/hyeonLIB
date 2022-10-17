@@ -96,7 +96,7 @@ Frame()
 // columns input
 function CheckEmptyContainer(arr) {
     if (document.querySelector('.scontainer:empty')) {
-        for (var i = 0; i<arr.length; i++) {
+        for (i=0; i<arr.length; i++) {
             NewItem(arr[i])
         }
     } else {
@@ -205,17 +205,3 @@ function getDragAfterElement(container,x,y) {
         }, { offset: Number.NEGATIVE_INFINITY }).element
     }
 }
-
-function drawGraph(x_col, y_col, graph_type) {
-    const spawner = require('child_process').spawn;
-
-    const data_to_pass_in = {'x_col':x_col,'y_col':y_col,'graph_type':graph_type};
-
-    const python_process = spawner('python', ['./graph.py', JSON.stringify(data_to_pass_in)])
-
-    python_process.stdout.on('data', (data) => {
-        console.log('Data received from python script: ', data.toString());
-    });
-}
-
-drawGraph('sex','age','scatter')
