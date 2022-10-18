@@ -206,25 +206,35 @@ function getDragAfterElement(container,x,y) {
     }
 }
 
-const spawner = require('child_process').spawn
 
-function drawGraph(x_col, y_col, graph_type, spawner) {
-    // const spawner = require('child_process').spawn;
 
-    const data_to_pass_in = {'x_col':x_col,'y_col':y_col,'graph_type':graph_type};
+// function drawGraph(x_col, y_col, graph_type) {
+//     const spawner = require('node:child_process').spawn;
 
-    const python_process = spawner('python', ['./graph.py', JSON.stringify(data_to_pass_in)])
+//     const data_to_pass_in = {'x_col':x_col,'y_col':y_col,'graph_type':graph_type};
 
-    python_process.stdout.on('data', (data) => {
-        console.log('Data received from python script: ', data.toString());
+//     const python_process = spawner('python', ['./graph.py', JSON.stringify(data_to_pass_in)])
+
+//     python_process.stdout.on('data', (data) => {
+//         console.log('Data received from python script: ', data.toString());
+//     });
+// }
+
+function drawGraph(x_col, y_col, graph_type) {
+    require(['require'], function (child_process) {
+        const spawner = child_process('child_process').spawn;
+        const data_to_pass_in = {'x_col':x_col, 'y_col':y_col, 'graph_type':graph_type};
+        const python_process = spawner('python', ['./graph.py', JSON.stringify(data_to_pass_in)])
+        python_process.stdout.on('data',(data) => {
+            console.log("data received from python script", data.toString())
+        })
     });
 }
 
-drawGraph('sex','age','scatter', spawner)
+drawGraph('sex','age','scatter')
 
-export default function sum(a, b) {
-    return a + b;
-  }
-  
-  // 👇️ named export
-  export const num = 100;
+// function preventRequireERROR() {
+//     alert("Using ESM import/export syntax");
+// }
+
+// export { preventRequireERROR };

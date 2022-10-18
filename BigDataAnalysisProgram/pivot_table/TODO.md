@@ -12,3 +12,8 @@ https://lightrun.com/answers/piotrdabkowski-js2py-js2py-throws-referenceerror-re
 https://bobbyhadz.com/blog/javascript-referenceerror-require-is-not-defined
 
 https://stackoverflow.com/questions/29105729/local-server-not-reflecting-updated-files
+
+
+
+pyscript , Flask
+https://www.youtube.com/watch?v=CQv7wfZIcs0
