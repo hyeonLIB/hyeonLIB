@@ -14,12 +14,5 @@ https://bobbyhadz.com/blog/javascript-referenceerror-require-is-not-defined
 https://stackoverflow.com/questions/29105729/local-server-not-reflecting-updated-files
 
 
-
-pyscript , 
-https://www.youtube.com/watch?v=CQv7wfZIcs0
-
-https://www.youtube.com/watch?v=PJuPJJDqqQo
-
-
 Flask
 https://opentutorials.org/module/3669/22003
