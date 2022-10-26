@@ -1,0 +1,51 @@
+body {
+    margin: 0;
+}
+
+.container {
+    background-color: #333;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+/* .column {
+    float:left;
+    width:50%;
+} */
+.row {
+    height: 50px;
+    display:flex;
+    flex-direction: row;
+    /* justify-content: center; */
+    align-items: center;
+}
+.container-out {
+    background-color: green;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+.container.horizontal {
+    background-color: #444;
+    padding: 1rem;
+    margin-top: 1rem;
+    overflow-x: scroll;
+}
+.container.vertical {
+    background-color: #444;
+    padding: 1rem;
+    margin-top: 1rem;
+    width: 100px;
+    height: 100px;
+    overflow-y:scroll
+}
+
+.draggable {
+    padding: 1rem;
+    background-color: white;
+    border: 1px solid black;
+    cursor: move;
+    width: 30px;
+}
+
+.draggable.dragging {
+    opacity: .5;
+}

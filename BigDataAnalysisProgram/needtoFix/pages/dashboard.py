@@ -73,19 +73,22 @@ import dash_bootstrap_components as dbc
 # dash.register_page(__name__, path='/dashboard')
 
 def viewer_table(main_dataframe):
-    data_viewer = dbc.Row([
-        html.H6(children="Data Viewer",),
-        dash_table.DataTable(
-            id='data-viewer',
-            columns=[{'name': i, 'id':i, 'deletable':True, 'selectable':False} for i in main_dataframe.columns],
-            data=main_dataframe.to_dict('records'),
-            virtualization=True,
-            filter_action='native',
-            fixed_rows={'headers': True},
-            style_cell={'minWidth': 70, 'width': 100, 'maxWidth': 140},
-            style_table={'height': 400},
-        )
-    ])
+    if len(main_dataframe) == 0:
+        data_viewer = []
+    else:    
+        data_viewer = dbc.Row([
+            html.H6(children="Data Viewer",),
+            dash_table.DataTable(
+                id='data-viewer',
+                columns=[{'name': i, 'id':i, 'deletable':True, 'selectable':False} for i in main_dataframe.columns],
+                data=main_dataframe.to_dict('records'),
+                virtualization=True,
+                filter_action='native',
+                fixed_rows={'headers': True},
+                style_cell={'minWidth': 70, 'width': 100, 'maxWidth': 140},
+                style_table={'height': 400},
+            )
+        ])
     return data_viewer
 
 # import pages.data_import1

@@ -5,8 +5,8 @@ from dash.dependencies import Input, Output
 import pandas as pd
 import os
 from pages import data_import
-# import dash_pivottable.dash_pivottable as dash_pivottable
-# from dash_pivottable.data import data
+import dash_pivottable.dash_pivottable as dash_pivottable
+from dash_pivottable.data import data
 # import components
 
 # global data_path

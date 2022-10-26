@@ -2,13 +2,17 @@ from dash import State, no_update
 import dash_bootstrap_components as dbc
 from dash_extensions.enrich import MultiplexerTransform, DashProxy, dcc, html, Input, Output
 from dash.dependencies import Input, Output
-from pages import data_import, data_import1, dashboard, eda, graphics, data_export, analysis, ERROR
-from pages import ERROR
 
 # app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app = DashProxy(__name__, prevent_initial_callbacks=True, transforms=[MultiplexerTransform()],external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions=True,
             meta_tags=[{'name': 'viewport','content': 'width=device-width, initial-scale=1.0'}])
 
+# 이걸 콜백 안에서 할 때 이유 모를 에러가 발생함 자꾸 ;
+
+from pages import data_import, data_import1, dashboard, eda, graphics, data_export, analysis, ERROR
+from pages import ERROR
+
+main_dataframe = []
 
 global has_been_init
 has_been_init = 0
@@ -97,11 +101,11 @@ app.layout = html.Div([
 )
 def render_page_content(pathname, has_been_init):
     if pathname == "/":
-        # from pages import data_import
+        from pages import data_import
         return data_import.layout, has_been_init
     elif pathname == "/data_import1":
         has_been_init = 1
-        # from pages import data_import1
+        from pages import data_import1
         return data_import1.layout, has_been_init
     elif pathname == "/data_import2":
         if has_been_init is not None:
@@ -111,36 +115,31 @@ def render_page_content(pathname, has_been_init):
             return ERROR.layout_not_initialized, no_update
     elif pathname == "/dashboard":
         if has_been_init is not None: # dcc store
-            # print(data_import.main_dataframe)
             # from pages import dashboard
             return dashboard.layout, no_update
         else:
             return ERROR.layout_not_initialized, no_update
     elif pathname == "/EDA":
         if has_been_init == 1:
-            # print(data_import.main_dataframe)\
-            # from pages import eda
+            from pages import eda
             return eda.layout, no_update
         else:
             return ERROR.layout_not_initialized, no_update
     elif pathname == "/graphics":
         if has_been_init == 1:
-            # print(data_import.main_dataframe)
-            # from pages import graphics
+            from pages import graphics
             return graphics.layout, no_update
         else:
             return ERROR.layout_not_initialized, no_update
     elif pathname == "/dataexport":
         if has_been_init == 1:
-            # print(data_import.main_dataframe)
-            # from pages import data_export
+            from pages import data_export
             return data_export.layout, no_update
         else:
             return ERROR.layout_not_initialized, no_update
     elif pathname == "/analysis":
         if has_been_init == 1:
-            # print(data_import.main_dataframe)
-            # from pages import analysis
+            from pages import analysis
             return analysis.layout, no_update
         else:
             return ERROR.layout_not_initialized, no_update

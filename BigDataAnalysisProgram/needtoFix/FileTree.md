@@ -1,0 +1,12 @@
+/BigDataAnalysis
+  __init__
+  routes.py
+  /static
+  /templates
+  /plotly_dash
+/data
+README.md
+config.py
+requirements.txt
+start.sh
+wsgi.py

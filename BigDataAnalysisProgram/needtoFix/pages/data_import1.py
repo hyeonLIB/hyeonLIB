@@ -20,7 +20,7 @@ from components.data_import_component import *
 # ----------------------------------------------------------------------------------------------------
 major_class = ['list1','list2','list3','list4','list5']
 minor_class = ['list1','list2','list3','list4','list5','list6']
-
+main_dataframe = []
 major_class_checklist_component = major_class_checklist(major_class)
 property_specification_modal_component = property_specification_modal()
 
