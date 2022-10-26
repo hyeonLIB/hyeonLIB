@@ -1,0 +1,54 @@
+.collapse-nav-link {
+    color: grey;
+    margin-left: 5px;
+}
+.collapse-nav-link:hover {
+    color: #ffff;
+    background-color: orange;
+  }
+
+.collapse-nav-link:active {
+    background-color: blue;
+}
+
+/* .dd-toggle {
+    position: relative;
+    background: grey;
+    line-height: 40px;
+    overflow-y: auto;
+    z-index: 9999;
+}
+.dd-list {
+    position: absolute;
+    /* top: 90%; */
+    /* background: #ff9c00; */
+/* } */
+
+/* 
+* {
+    color:green;
+} */
+
+/* .dash-dropdown {
+    position: absolute;
+    width: 300px;
+    background-color: #CCC;
+    overflow: visible;
+    display: none;
+    z-index: 9999;
+}       
+:hover>.dash-dropdown {
+    display: block;
+    z-index: 9999;
+}        */
+/* 
+#dpdn-col-selection {
+    position: relative;
+    text-overflow: ellipsis;
+}
+
+#dpdn-col-selection:hover {
+    position: absolute;
+    overflow-y: scroll;
+    z-index : 999999;
+} */
