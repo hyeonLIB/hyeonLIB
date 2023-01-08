@@ -4,5 +4,3 @@ https://velog.io/@imok-_/AWS-EC2-Docker-GPU-%ED%99%98%EA%B2%BD-%EA%B5%AC%EC%84%B
 Zira
 https://www.youtube.com/watch?v=Vwa7BQ6WFYw
 
-Notion
-https://www.youtube.com/watch?v=RV-3v95fTgM&t=248s
